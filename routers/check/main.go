@@ -1,9 +1,8 @@
 package check
 
 import (
-	"api/handlers"
-
 	"github.com/gin-gonic/gin"
+	"github.com/gunjdesai/go-gin-boilerplate/handlers"
 )
 
 func Load(router *gin.RouterGroup) {
