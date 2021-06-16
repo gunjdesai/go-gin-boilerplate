@@ -7,6 +7,7 @@ import (
 	"github.com/gunjdesai/go-gin-boilerplate/conf"
 	"github.com/gunjdesai/go-gin-boilerplate/logger"
 	"github.com/gunjdesai/go-gin-boilerplate/routers"
+	_ "go.uber.org/automaxprocs"
 )
 
 func main() {
