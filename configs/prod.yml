@@ -1,0 +1,5 @@
+app:
+  host: "api-service"
+  port: "80"
+  log:
+    level: "warn"
