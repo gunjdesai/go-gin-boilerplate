@@ -1,35 +1,31 @@
-package logger
+package loggers
 
 import (
-	"fmt"
-	"os"
+	"errors"
 
-	"github.com/gunjdesai/go-gin-boilerplate/conf"
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
 )
 
-type logger struct {
+type Logger struct {
 	log *zap.Logger
 }
 
-var Log *logger
+func New(lvl string) (*Logger, error) {
 
-func init() {
-
-	var err error
-	Log, err = load(conf.Config.App.Log.Level)
+	Log, err := load(lvl)
 
 	if err != nil {
-		fmt.Println("Error during Logger Initialisation", err)
-		os.Exit(10)
+		err = errors.New("Error during Logger Initialisation " + err.Error())
 	}
+
+	return Log, err
 
 }
 
-func load(level string) (*logger, error) {
+func load(level string) (*Logger, error) {
 
-	log := logger{}
+	log := Logger{}
 	lvl := getLogLevel(level)
 
 	if err := log.build(lvl); err != nil {
@@ -40,7 +36,7 @@ func load(level string) (*logger, error) {
 
 }
 
-func (l *logger) build(lvl zapcore.Level) error {
+func (l *Logger) build(lvl zapcore.Level) error {
 
 	cfg := zap.Config{
 		Encoding:    "json",
@@ -68,31 +64,31 @@ func (l *logger) build(lvl zapcore.Level) error {
 
 }
 
-func (l *logger) Debug(message string, fields ...zap.Field) {
+func (l *Logger) Debug(message string, fields ...zap.Field) {
 
 	go l.log.Debug(message, fields...)
 
 }
 
-func (l *logger) Info(message string, fields ...zap.Field) {
+func (l *Logger) Info(message string, fields ...zap.Field) {
 
 	go l.log.Info(message, fields...)
 
 }
 
-func (l *logger) Warn(message string, fields ...zap.Field) {
+func (l *Logger) Warn(message string, fields ...zap.Field) {
 
 	go l.log.Warn(message, fields...)
 
 }
 
-func (l *logger) Fatal(message string, fields ...zap.Field) {
+func (l *Logger) Fatal(message string, fields ...zap.Field) {
 
 	go l.log.Fatal(message, fields...)
 
 }
 
-func (l *logger) Panic(message string, fields ...zap.Field) {
+func (l *Logger) Panic(message string, fields ...zap.Field) {
 
 	go l.log.Panic(message, fields...)
 
@@ -104,15 +100,15 @@ func getLogLevel(level string) zapcore.Level {
 
 	switch level {
 
-	case WARN, WARNING:
+	case warn, warning:
 		lvl = zap.WarnLevel
-	case FATAL:
+	case fatal:
 		lvl = zap.FatalLevel
-	case INFO:
+	case info:
 		lvl = zap.InfoLevel
-	case DEBUG:
+	case debug:
 		lvl = zap.DebugLevel
-	case PANIC:
+	case panic:
 		lvl = zap.PanicLevel
 	default:
 		lvl = zap.InfoLevel
