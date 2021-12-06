@@ -1,8 +1,8 @@
 package conf
 
 import (
-	"fmt"
-	"os"
+	"errors"
+	"path"
 
 	env "github.com/Netflix/go-env"
 	"github.com/gunjdesai/go-gin-boilerplate/helpers"
@@ -14,33 +14,40 @@ type Configuration struct {
 		Host string
 		Port string
 		Log  struct {
-			Level string `env:"APP_LOG_LEVEL"`
+			Level string `env:"APP_LOG_LEVEL,required=true"`
+		}
+	}
+	Db struct {
+		Elastic struct {
+			Host string
+			Port string
 		}
 	}
 }
 
 var Config *Configuration
 
-func init() {
+func New(location string, fileName string) (*Configuration, error) {
 
 	Config = &Configuration{}
-
-	environment := helpers.GetEnv()
-	viper.SetConfigFile(CONFIG_PATH + environment + FILE_TYPE)
+	filePath := path.Join(helpers.GetRootDir(), location, fileName)
+	viper.SetConfigFile(filePath)
 
 	if err := viper.ReadInConfig(); err != nil {
-		fmt.Printf("Error reading config file, %s... ", err)
-		os.Exit(10)
+		err = errors.New("Error reading config file, " + err.Error())
+		return nil, err
 	}
 
 	if err := viper.Unmarshal(Config); err != nil {
-		fmt.Printf("Unable to decode into struct, %v... ", err)
-		os.Exit(10)
+		err = errors.New("Unable to decode to struct, " + err.Error())
+		return nil, err
 	}
 
 	if _, err := env.UnmarshalFromEnviron(Config); err != nil {
-		fmt.Printf("Environment Variables override failure: , %v... ", err)
-		os.Exit(10)
+		err = errors.New("Envirnoment variable override failure, " + err.Error())
+		return nil, err
 	}
+
+	return Config, nil
 
 }

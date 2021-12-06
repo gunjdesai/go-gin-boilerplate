@@ -1,0 +1,13 @@
+samole:
+app:
+  host: 
+    some: 
+      val:
+        random: 'val'
+  port: "8080"
+  log:
+    level: "debug"
+db:
+  elastic:
+    host: "https://sample-sam.ple.com"
+    ported: "443"
